@@ -28,7 +28,7 @@ _Populated by Phase 4 of the `/idea-to-plan` pipeline. See the Decision Summary 
 - **Branch:** `phase/02-demo-corpus-quickstart`
 - **Depends on:** Phase 01
 - **Testing Strategy:** None (UX / docs slice). Reason: this phase only adds static synthetic markdown docs + README prose — no code to test. Validation is the manual "recruiter 15-min runnability drill" documented in the acceptance criteria.
-- **Status:** planned
+- **Status:** shipped, PR open (stacked on phase/01-bootstrap-compose)
 
 ### Phase 03 — BGE-reranker-v2-m3 wired into retrieval
 - **Issue:** [#4](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/4)
