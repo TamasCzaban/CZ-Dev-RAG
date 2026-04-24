@@ -35,6 +35,43 @@ services:
       retries: 5
       start_period: 60s
 
+  # ---------------------------------------------------------------------------
+  # BGE-reranker-v2-m3 — cross-encoder reranking via infinity-emb
+  #
+  # Runs on CPU to keep VRAM free for Qwen2.5-32B + BGE-M3 on the 3090.
+  # Total VRAM budget on the 3090:
+  #   Qwen2.5-32B Q4_K_M   ~18 GB
+  #   BGE-M3 (embedding)   ~ 2 GB
+  #   BGE-reranker-v2-m3   ~ 1-2 GB (would push past 24 GB limit)
+  # Reranker is CPU-mode for v1; promote to GPU when running on multi-GPU or
+  # after migrating LLM to a quantised < 16 GB variant.
+  # Switch to GPU: change `--device cpu` to `--device cuda` and uncomment the
+  # deploy.resources.reservations.devices stanza below.
+  # ---------------------------------------------------------------------------
+  reranker:
+    image: michaelf34/infinity:latest
+    container_name: cz-dev-rag-reranker
+    restart: unless-stopped
+    command: >
+      v2
+      --model-id BAAI/bge-reranker-v2-m3
+      --port 7997
+      --device cpu
+    # GPU variant (enable when VRAM budget allows):
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:7997/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
   langfuse-postgres:
     image: postgres:16-alpine
     container_name: cz-dev-rag-langfuse-db
