@@ -107,30 +107,58 @@ Same pattern as `LLM_TIMEOUT` but for the BGE-M3 embedding queue.
 
 ---
 
-## BGE-M3 NaN Embeddings Under Concurrent GPU Load
+## BGE-M3 NaN Embeddings — Ollama Flash-Attention Bug
 
-**Problem:** During LightRAG's merging stage, multiple entity/relation names are
-embedded concurrently using `EMBEDDING_FUNC_MAX_ASYNC` (default: 8) workers.
-On a single 3090 running Qwen2.5-32B and BGE-M3 simultaneously, 8 concurrent
-embedding calls cause GPU memory bandwidth contention. BGE-M3 occasionally
-produces `NaN` values in its output tensor, and Ollama responds with:
+**Problem:** During LightRAG's merging stage (post entity extraction), Ollama
+returns HTTP 500 with `failed to encode response: json: unsupported value: NaN`
+when LightRAG embeds entity+description pairs via BGE-M3. LightRAG retries 3×,
+fails, and marks the document as `failed` — even though extraction succeeded.
+
+**Root cause** ([ollama#13572](https://github.com/ollama/ollama/issues/13572)):
+- Ollama v0.13.5 added `"bert"` to the auto-flash-attention list in `fs/ggml/ggml.go`.
+- BGE-M3 is BERT-based, so flash attention is silently enabled.
+- `llama.cpp/src/llama-graph.cpp:1431-1437` casts K/V tensors F32→F16 before
+  `ggml_flash_attn_ext`. F16 max is ~65504; longer/denser inputs overflow to
+  Inf → softmax → **NaN**.
+- Bug introduced in **v0.13.5**, still present in **0.21.x**.
+
+**Why merging triggers it but extraction doesn't:**
+- Extraction embeds short chunks (stays under the overflow threshold).
+- Merging embeds `entity_name + "\n" + merged_description` — hundreds to
+  thousands of chars, F16 overflow fires.
+- Same reason `curl -d '{"input":"Confidentiality"}'` works (short input) but
+  the same entity fails inside LightRAG (long description concatenated).
+
+**FIX (confirmed working by 6+ Ollama users):**
+Set on the Windows Ollama host:
 ```
-HTTP 500: failed to encode response: json: unsupported value: NaN
+setx OLLAMA_FLASH_ATTENTION false
+# then kill + restart ollama.exe so it picks up the env var
 ```
-LightRAG retries 3× then marks the document as `failed` during the merging
-stage — even though entity extraction succeeded.
+This disables flash attention globally on the Ollama process. Cost is ~30%
+extra VRAM on non-embedding models, which a 24 GB 3090 has headroom for with
+Qwen2.5-32B Q4_K_M.
 
-**Key insight:** The failure is probabilistic. A single doc may succeed while
-another fails. The extraction results are cached, so reprocessing only re-runs
-the merging stage (fast, minutes not hours).
+**Things that did NOT fix it** (ruled out experimentally):
+- Upgrading Ollama 0.17.7 → 0.21.2 (bug is in llama.cpp path, not version-specific)
+- `MAX_ASYNC=1` (serial document processing) — NaN still hit
+- `EMBEDDING_FUNC_MAX_ASYNC=2` (lower embed concurrency) — NaN still hit
+- Earlier theory of "GPU contention between Qwen + BGE-M3" was WRONG; the NaN
+  is purely an F16 overflow in the flash-attn path, regardless of concurrency.
 
-**Fix:** Set `EMBEDDING_FUNC_MAX_ASYNC=2` in `.env`. This limits concurrent
-BGE-M3 calls to 2, dramatically reducing GPU contention during merging.
+**Alternative workarounds (not applied, documented for reference):**
+1. Switch to a non-Ollama embedding backend (HuggingFace TEI or Infinity server) —
+   LightRAG maintainer `danielaskdd` explicitly recommends vLLM/SGLang for production.
+2. Client-side input truncation patch to `lightrag/llm/ollama.py` `ollama_embed()` —
+   truncate inputs progressively (2000→1000→500→200 chars) with placeholder
+   fallback ([LightRAG#1870](https://github.com/HKUDS/LightRAG/issues/1870),
+   upstream fix in [LightRAG#2916](https://github.com/HKUDS/LightRAG/pull/2916)).
+3. Switch to `multilingual-e5-large` via Ollama — same 1024-dim so no schema
+   rebuild, same BERT flash-attn caveat so still needs `OLLAMA_FLASH_ATTENTION=false`.
 
-**Did NOT fix it:** Upgrading Ollama from 0.17.7 → 0.21.2. The NaN is a
-GPU-contention issue, not an Ollama version issue.
-
-**Affected env var:** `EMBEDDING_FUNC_MAX_ASYNC` (LightRAG constant default: 8).
+**Affected env vars (now safe to leave at defaults):**
+- `MAX_ASYNC` — document-level concurrency. Can raise back to 2+ once flash-attn is off.
+- `EMBEDDING_FUNC_MAX_ASYNC` — per-doc embed concurrency. Can raise back to default 8.
 
 ---
 
