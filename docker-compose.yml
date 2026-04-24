@@ -1,0 +1,75 @@
+services:
+  lightrag:
+    image: ghcr.io/hkuds/lightrag:latest
+    container_name: cz-dev-rag-lightrag
+    restart: unless-stopped
+    ports:
+      - "${LIGHTRAG_PORT:-9621}:9621"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 9621
+      WORKING_DIR: ${WORKING_DIR:-/app/data/rag_storage}
+      INPUT_DIR: /app/data/input
+      LLM_BINDING: ollama
+      LLM_BINDING_HOST: ${OLLAMA_HOST:-http://host.docker.internal:11434}
+      LLM_MODEL: ${LLM_MODEL:-qwen2.5:32b-instruct-q4_K_M}
+      EMBEDDING_BINDING: ollama
+      EMBEDDING_BINDING_HOST: ${OLLAMA_HOST:-http://host.docker.internal:11434}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-bge-m3:latest}
+      EMBEDDING_DIM: ${EMBEDDING_DIM:-1024}
+      MAX_ASYNC: ${MAX_ASYNC:-4}
+      LIGHTRAG_MODE_DEFAULT: ${LIGHTRAG_MODE_DEFAULT:-hybrid}
+    volumes:
+      - ./data/input:/app/data/input
+      - ./data/rag_storage:/app/data/rag_storage
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9621/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  langfuse-postgres:
+    image: postgres:16-alpine
+    container_name: cz-dev-rag-langfuse-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${LANGFUSE_DB_USER:-langfuse}
+      POSTGRES_PASSWORD: ${LANGFUSE_DB_PASSWORD:-change-me-please}
+      POSTGRES_DB: ${LANGFUSE_DB_NAME:-langfuse}
+    volumes:
+      - langfuse_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  langfuse-web:
+    image: langfuse/langfuse:2
+    container_name: cz-dev-rag-langfuse
+    restart: unless-stopped
+    depends_on:
+      langfuse-postgres:
+        condition: service_healthy
+    ports:
+      - "${LANGFUSE_PORT:-3000}:3000"
+    environment:
+      DATABASE_URL: postgresql://${LANGFUSE_DB_USER:-langfuse}:${LANGFUSE_DB_PASSWORD:-change-me-please}@langfuse-postgres:5432/${LANGFUSE_DB_NAME:-langfuse}
+      NEXTAUTH_URL: ${LANGFUSE_HOST:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:-change-me-to-a-long-random-string-please}
+      SALT: ${LANGFUSE_SALT:-change-me-to-another-long-random-string-please}
+      TELEMETRY_ENABLED: "false"
+      LANGFUSE_INIT_ORG_NAME: ${LANGFUSE_INIT_ORG_NAME:-CZ Dev}
+      LANGFUSE_INIT_PROJECT_NAME: ${LANGFUSE_INIT_PROJECT_NAME:-cz-dev-rag}
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:3000/api/public/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  langfuse_data:

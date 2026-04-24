@@ -1,17 +1,17 @@
 # STATE
 
-**Current phase:** 01 — Bootstrap docker-compose baseline
-**Status:** planned (scaffolding complete, awaiting `/gsd:plan-phase 01`)
-**Branch for phase 01:** `phase/01-bootstrap-compose`
+**Current phase:** 02 — Demo corpus + README quickstart polish
+**Status:** phase 01 shipped (PR open, awaiting review)
+**Branch for phase 02:** `phase/02-demo-corpus-quickstart`
 **Last updated:** 2026-04-24
 
 ## Completed phases
 
-_None yet._
+- **Phase 01** — Bootstrap docker-compose baseline — PR open for [#2](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/2) on `phase/01-bootstrap-compose`. `docker compose config` validates.
 
 ## Next up
 
-Phase 01 — see [ROADMAP.md](./ROADMAP.md#phase-01--bootstrap-docker-compose-baseline) and [issue #2](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/2).
+Phase 02 — see [ROADMAP.md](./ROADMAP.md#phase-02--demo-corpus--readme-quickstart-polish) and [issue #3](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/3).
 
 To begin: `/gsd:plan-phase 01` → review plan → `/gsd:execute-phase 01` → `/gsd-review` → `gh pr create ...`
 
