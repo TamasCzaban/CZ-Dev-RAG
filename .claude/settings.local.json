@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /c/Users/Toma/projects/CZ-Dev-RAG/.claude/skills)",
+      "Bash(cp -r /c/Users/Toma/projects/bemer-crm/.claude/skills/gsd-review /c/Users/Toma/projects/CZ-Dev-RAG/.claude/skills/)",
+      "Bash(cp -r /c/Users/Toma/projects/bemer-crm/.claude/skills/idea-to-plan /c/Users/Toma/projects/CZ-Dev-RAG/.claude/skills/)",
+      "Bash(cp -r /c/Users/Toma/projects/bemer-crm/.claude/skills/idea-to-ship /c/Users/Toma/projects/CZ-Dev-RAG/.claude/skills/)",
+      "Bash(cp -r /c/Users/Toma/projects/bemer-crm/.claude/skills/issue-to-gsd /c/Users/Toma/projects/CZ-Dev-RAG/.claude/skills/)"
+    ]
+  }
+}

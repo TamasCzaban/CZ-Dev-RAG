@@ -1,0 +1,78 @@
+# Secrets
+.env
+.env.local
+.env.*.local
+
+# Data — client documents never enter git
+data/
+!data/.gitkeep
+
+# LightRAG storage — graph, vectors, cache
+rag_storage/
+*.graph.json
+*.vdb
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# uv
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Ruff / mypy
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs / metrics
+*.log
+logs/
+metrics.jsonl
+
+# Docker
+.docker/
+
+# Langfuse data
+langfuse_data/
+
+# Ollama models (host-managed, just in case)
+ollama_models/
+
+# Backup artifacts
+*.restic
+backup-*.tar.gz
