@@ -128,6 +128,18 @@ Exposed tools:
 
 Full component details: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md).
 
+## Observability
+
+Every query is traced to **Langfuse** via the `trace_query` context manager in `src/tracing/`. Each trace records:
+
+- `latency_ms` — wall-clock query time
+- `tokens_in` / `tokens_out` — token counts from Qwen2.5-32B
+- `mode` — retrieval mode (`naive`, `local`, `global`, `hybrid`)
+- `num_retrieved` — source chunks returned
+- `rerank_applied` — whether the BGE reranker ran
+
+Open the Langfuse UI at `http://localhost:3000` after the stack is up. Full details in [`docs/OBSERVABILITY.md`](./docs/OBSERVABILITY.md).
+
 ## Documentation
 
 - [`ROADMAP.md`](./ROADMAP.md) — implementation phases (10 vertical slices)
