@@ -146,10 +146,13 @@ def run_ragas(
         faithfulness,
     )
 
-    llm = ChatOllama(model="qwen2.5:32b", base_url=ollama_base_url)
+    llm_model = os.environ.get("LLM_MODEL", "qwen2.5:32b-instruct-q4_K_M")
+    embed_model = os.environ.get("EMBEDDING_MODEL", "bge-m3:latest")
+
+    llm = ChatOllama(model=llm_model, base_url=ollama_base_url)
     ragas_llm = LangchainLLMWrapper(llm)
 
-    embeddings = OllamaEmbeddings(model="bge-m3", base_url=ollama_base_url)
+    embeddings = OllamaEmbeddings(model=embed_model, base_url=ollama_base_url)
     ragas_embeddings = LangchainEmbeddingsWrapper(embeddings)
 
     # evaluate() returns EvaluationResult | Executor; cast to Any for .get()
