@@ -11,10 +11,10 @@ services:
       WORKING_DIR: ${WORKING_DIR:-/app/data/rag_storage}
       INPUT_DIR: /app/data/input
       LLM_BINDING: ollama
-      LLM_BINDING_HOST: ${OLLAMA_HOST:-http://host.docker.internal:11434}
+      LLM_BINDING_HOST: http://host.docker.internal:11434
       LLM_MODEL: ${LLM_MODEL:-qwen2.5:32b-instruct-q4_K_M}
       EMBEDDING_BINDING: ollama
-      EMBEDDING_BINDING_HOST: ${OLLAMA_HOST:-http://host.docker.internal:11434}
+      EMBEDDING_BINDING_HOST: http://host.docker.internal:11434
       EMBEDDING_MODEL: ${EMBEDDING_MODEL:-bge-m3:latest}
       EMBEDDING_DIM: ${EMBEDDING_DIM:-1024}
       MAX_ASYNC: ${MAX_ASYNC:-4}
@@ -25,7 +25,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9621/health || exit 1"]
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:9621/health', timeout=5).status==200 else 1)\""]
       interval: 30s
       timeout: 10s
       retries: 5
