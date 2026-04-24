@@ -5,6 +5,7 @@
 Local knowledge base for CZ Dev agency using LightRAG + RAG-Anything. Hosted on Tamas's RTX 3090 (Windows 11 + native Ollama + Docker Desktop), shared with Zsombor via Tailscale. Public GitHub repo; client data never committed.
 
 See `README.md` for the user-facing summary and `docs/DECISIONS.md` for why-this-not-that.
+See `LEARNINGS.md` for operational gotchas — NaN embedding bugs, timeout footguns, WSL conflicts, etc. Read it before debugging any LightRAG/Ollama issue.
 
 ## Non-negotiable rules
 
