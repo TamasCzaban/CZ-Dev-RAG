@@ -129,6 +129,7 @@ Exposed tools: `query_kb(question, mode)` and `list_documents()`. Full details i
 - [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — data flow + component boundaries
 - [`docs/DECISIONS.md`](./docs/DECISIONS.md) — 10 ADRs explaining why-this-not-that
 - [`examples/demo-corpus/README.md`](./examples/demo-corpus/README.md) — what each demo document is for
+- [`scripts/README.md`](./scripts/README.md) — operational scripts: bulk ingest, delete-by-source, restic backup
 
 ## Built with
 
