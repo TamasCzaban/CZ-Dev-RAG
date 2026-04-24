@@ -146,6 +146,10 @@ class TesseractEngine(BaseOCREngine):
 
         Returns ``(text, confidence)`` where *confidence* is the word-ratio
         heuristic computed over the concatenated output of all pages.
+
+        Environment variables (Windows / non-standard install locations):
+        - ``TESSERACT_CMD``: full path to tesseract.exe
+        - ``POPPLER_PATH``: directory containing pdftoppm / pdfinfo binaries
         """
         import pytesseract  # guarded -- may not be installed in all envs
         from pdf2image import convert_from_path  # guarded
@@ -154,7 +158,12 @@ class TesseractEngine(BaseOCREngine):
         if not path.is_file():
             raise FileNotFoundError(f"PDF not found: {pdf_path}")
 
-        images = convert_from_path(str(path), dpi=self._dpi)
+        tesseract_cmd = os.environ.get("TESSERACT_CMD")
+        if tesseract_cmd:
+            pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
+
+        poppler_path = os.environ.get("POPPLER_PATH") or None
+        images = convert_from_path(str(path), dpi=self._dpi, poppler_path=poppler_path)
 
         page_texts: list[str] = []
         for image in images:
