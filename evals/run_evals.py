@@ -139,26 +139,32 @@ def run_ragas(
     Returns NaN-safe floats — individual NaNs are dropped from the average.
     """
     import math
+    import warnings
 
-    from openai import OpenAI
+    from langchain_ollama import ChatOllama, OllamaEmbeddings
     from ragas import evaluate
-    from ragas.embeddings import OpenAIEmbeddings
-    from ragas.llms import llm_factory
-    from ragas.metrics.collections import (
-        AnswerRelevancy,
-        ContextPrecision,
-        Faithfulness,
-    )
+    from ragas.embeddings import LangchainEmbeddingsWrapper
+    from ragas.llms import LangchainLLMWrapper
 
     llm_model = os.environ.get("LLM_MODEL", "qwen2.5:32b-instruct-q4_K_M")
     embed_model = os.environ.get("EMBEDDING_MODEL", "bge-m3:latest")
-    ollama_v1_url = ollama_base_url.rstrip("/") + "/v1"
 
-    ollama_client = OpenAI(base_url=ollama_v1_url, api_key="ollama")
-    ragas_llm = llm_factory(llm_model, client=ollama_client)
-    ragas_embeddings = OpenAIEmbeddings(model=embed_model, client=ollama_client)
+    ragas_llm = LangchainLLMWrapper(ChatOllama(model=llm_model, base_url=ollama_base_url))
+    ragas_embeddings = LangchainEmbeddingsWrapper(OllamaEmbeddings(model=embed_model, base_url=ollama_base_url))
 
-    metrics = [Faithfulness(llm=ragas_llm), AnswerRelevancy(llm=ragas_llm, embeddings=ragas_embeddings), ContextPrecision(llm=ragas_llm)]
+    # Ragas 0.4 evaluate() requires the old dataclass-based Metric singletons
+    # (ragas.metrics.*), not the new Pydantic BaseMetric classes from
+    # ragas.metrics.collections.* — the latter fail isinstance(m, Metric).
+    # The singletons are deprecated but won't be removed until v1.0.
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        from ragas.metrics import answer_relevancy, context_precision, faithfulness  # noqa: PLC0415
+
+        faithfulness.llm = ragas_llm
+        answer_relevancy.llm = ragas_llm
+        answer_relevancy.embeddings = ragas_embeddings
+        context_precision.llm = ragas_llm
+        metrics = [faithfulness, answer_relevancy, context_precision]
 
     # evaluate() returns EvaluationResult | Executor; cast to Any for .get()
     raw_result: Any = evaluate(
