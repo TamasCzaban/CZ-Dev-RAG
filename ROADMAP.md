@@ -21,7 +21,7 @@ _Populated by Phase 4 of the `/idea-to-plan` pipeline. See the Decision Summary 
 - **Branch:** `phase/01-bootstrap-compose`
 - **Depends on:** _none_ (foundational)
 - **Testing Strategy:** Integration smoke — docker compose up + healthcheck loop. No unit tests (pure infra). Source: this phase adds only compose YAML + `.env.example` + `pyproject.toml` stub.
-- **Status:** planned
+- **Status:** shipped, PR open
 
 ### Phase 02 — Demo corpus + README quickstart polish
 - **Issue:** [#3](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/3)

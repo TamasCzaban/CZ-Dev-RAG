@@ -1,0 +1,32 @@
+[project]
+name = "cz-dev-rag"
+version = "0.1.0"
+description = "Local graph-based RAG knowledge base for CZ Dev agency. LightRAG + RAG-Anything on RTX 3090."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Tamas Czaban" }]
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "ruff>=0.6.0",
+    "mypy>=1.11.0",
+    "pytest>=8.0.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
