@@ -221,23 +221,32 @@ Execute before marking phase 09 complete. The runbook acceptance criterion is a 
 # 1. Stop LightRAG so it is not writing during restore
 docker compose stop lightrag
 
-# 2. List available snapshots
+# 2. Delete the live storage
+rm -rf data/rag_storage/
+
+# 3. List available snapshots (load env first — restic needs B2 creds)
+set -a && source .env && set +a
 restic snapshots
 
-# 3. Restore data/ from latest snapshot
-#    --target is the repo root; restic reconstructs the relative path inside
-restic restore latest --target "C:\Users\Toma\projects\CZ-Dev-RAG" --include /data
+# 4. Restore — use --target / so restic writes back to the original absolute path.
+#    Do NOT use --target <repo-root>: restic would nest the full Windows path
+#    under the target, producing data/ at <repo-root>/C/Users/.../data/.
+set -a && source .env && set +a
+restic restore latest --target /
 
-# 4. Restart LightRAG
+# 5. Restart LightRAG
 docker compose start lightrag
 
-# 5. Wait for healthy, then sanity query
+# 6. Wait for healthy, then sanity query
 docker compose ps
 
 curl -X POST http://localhost:9621/query \
   -H "Content-Type: application/json" \
   -d '{"query": "What are the payment terms in the AcmeCo MSA?", "mode": "hybrid"}'
 ```
+
+> **Windows note:** if `restic` is not on PATH (winget install, fresh shell), use the full
+> exe path from `scripts/backup.sh` (the `RESTIC_WINGET` fallback variable shows the location).
 
 Expected: non-empty JSON with an `answer` field referencing the AcmeCo MSA.
 
