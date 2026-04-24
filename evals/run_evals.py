@@ -133,33 +133,37 @@ def run_ragas(
 ) -> dict[str, float]:
     """Run Ragas evaluation and return metric averages.
 
+    Uses Ragas 0.4 API: llm_factory + OpenAIEmbeddings pointed at Ollama's
+    OpenAI-compatible endpoint (http://localhost:11434/v1).
+
     Returns NaN-safe floats — individual NaNs are dropped from the average.
     """
     import math
 
-    from langchain_ollama import ChatOllama, OllamaEmbeddings
+    from openai import OpenAI
     from ragas import evaluate
-    from ragas.embeddings import LangchainEmbeddingsWrapper
-    from ragas.llms import LangchainLLMWrapper
+    from ragas.embeddings import OpenAIEmbeddings
+    from ragas.llms import llm_factory
     from ragas.metrics.collections import (
-        answer_relevancy,
-        context_precision,
-        faithfulness,
+        AnswerRelevancy,
+        ContextPrecision,
+        Faithfulness,
     )
 
     llm_model = os.environ.get("LLM_MODEL", "qwen2.5:32b-instruct-q4_K_M")
     embed_model = os.environ.get("EMBEDDING_MODEL", "bge-m3:latest")
+    ollama_v1_url = ollama_base_url.rstrip("/") + "/v1"
 
-    llm = ChatOllama(model=llm_model, base_url=ollama_base_url)
-    ragas_llm = LangchainLLMWrapper(llm)
+    ollama_client = OpenAI(base_url=ollama_v1_url, api_key="ollama")
+    ragas_llm = llm_factory(llm_model, client=ollama_client)
+    ragas_embeddings = OpenAIEmbeddings(model=embed_model, client=ollama_client)
 
-    embeddings = OllamaEmbeddings(model=embed_model, base_url=ollama_base_url)
-    ragas_embeddings = LangchainEmbeddingsWrapper(embeddings)
+    metrics = [Faithfulness(llm=ragas_llm), AnswerRelevancy(llm=ragas_llm, embeddings=ragas_embeddings), ContextPrecision(llm=ragas_llm)]
 
     # evaluate() returns EvaluationResult | Executor; cast to Any for .get()
     raw_result: Any = evaluate(
         dataset,
-        metrics=[faithfulness, answer_relevancy, context_precision],
+        metrics=metrics,
         llm=ragas_llm,
         embeddings=ragas_embeddings,
     )
