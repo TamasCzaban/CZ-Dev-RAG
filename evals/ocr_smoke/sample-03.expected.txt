@@ -1,0 +1,4 @@
+Nev	Osszeg	Statusz
+Kovacs Bela	150 000 Ft	Aktiv
+Nagy Anna	85 500 Ft	Lejart
+Szabo Peter	210 000 Ft	Aktiv

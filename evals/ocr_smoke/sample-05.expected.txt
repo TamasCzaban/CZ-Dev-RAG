@@ -1,0 +1,4 @@
+Elso oldal
+Ez a dokumentum ket oldalbol all. Az elso oldal rovid bevezeto szoveget tartalmaz.
+Masodik oldal
+A masodik oldalon folytatodik a szoveg. Az oldalvaltas helyes kezelese fontos az OCR motor szamara.
