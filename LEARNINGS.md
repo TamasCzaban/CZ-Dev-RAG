@@ -156,9 +156,11 @@ Qwen2.5-32B Q4_K_M.
 3. Switch to `multilingual-e5-large` via Ollama — same 1024-dim so no schema
    rebuild, same BERT flash-attn caveat so still needs `OLLAMA_FLASH_ATTENTION=false`.
 
-**Affected env vars (now safe to leave at defaults):**
-- `MAX_ASYNC` — document-level concurrency. Can raise back to 2+ once flash-attn is off.
-- `EMBEDDING_FUNC_MAX_ASYNC` — per-doc embed concurrency. Can raise back to default 8.
+**Recommended env vars after fix:**
+- `OLLAMA_FLASH_ATTENTION=false` on host — the actual fix.
+- `MAX_ASYNC=2` — safe on a single 3090 once flash-attn is off.
+- `EMBEDDING_FUNC_MAX_ASYNC=8` — LightRAG default; concurrency was not the root cause.
+- Both were lowered to 1 during debugging. That was unnecessary once flash-attn was patched.
 
 ---
 
