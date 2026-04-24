@@ -2,7 +2,7 @@
 
 > Local, graph-based knowledge base for a two-person software agency. LightRAG + RAG-Anything on an RTX 3090, Windows-native Ollama, Tailscale for remote access. **Public code, private data.**
 
-![status](https://img.shields.io/badge/status-early%20scaffolding-orange) ![license](https://img.shields.io/badge/license-MIT-blue) ![python](https://img.shields.io/badge/python-3.11+-blue)
+![status](https://img.shields.io/badge/status-early%20scaffolding-orange) ![license](https://img.shields.io/badge/license-MIT-blue) ![python](https://img.shields.io/badge/python-3.11+-blue) [![CI](https://github.com/TamasCzaban/CZ-Dev-RAG/actions/workflows/ci.yml/badge.svg)](https://github.com/TamasCzaban/CZ-Dev-RAG/actions/workflows/ci.yml)
 
 **Repository state:** phases 01–02 landing. Compose stack + demo corpus + quickstart are live; retrieval polish (reranker, evals, MCP, Langfuse tracing) follows in [`ROADMAP.md`](./ROADMAP.md).
 
