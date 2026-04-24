@@ -16,7 +16,7 @@ Two human users (Tamas, Zsombor) + one machine agent (Claude Code via MCP) acces
 | MinerU | In LightRAG container (CPU) | PDF/DOCX/image → structured text |
 | BGE-reranker-v2-m3 | Docker (dedicated service) | Cross-encoder reranking on retrieved chunks |
 | Langfuse | Docker compose (self-hosted) | Query tracing, latency + token metrics |
-| MCP server | Docker | Exposes `query_kb` + `list_documents` over MCP protocol |
+| MCP server | Docker | Exposes `query_kb` + `list_documents` over MCP protocol. Thin httpx wrapper around LightRAG HTTP API; stdio transport for Claude Code / Cursor integration. |
 | Tailscale | Windows host | Mesh VPN; binds port 9621 to tailnet only |
 | restic | Windows host, scheduled | Encrypted offsite backup to Backblaze B2 |
 

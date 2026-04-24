@@ -107,20 +107,26 @@ _Eval harness lands in phase 05 — table will be auto-populated from `evals/res
 
 ## MCP server
 
-The MCP wrapper lands in phase 07. When it does, registering the KB with Claude Code will look like this:
+Register the knowledge base with Claude Code by adding the following to your `claude_desktop_config.json` (or equivalent MCP config):
 
 ```json
 {
   "mcpServers": {
-    "cz-dev-kb": {
+    "cz-dev-rag": {
       "command": "docker",
-      "args": ["exec", "-i", "cz-dev-rag-mcp", "python", "/app/server.py"]
+      "args": ["compose", "exec", "-T", "mcp", "python", "-m", "src.mcp_server.server"],
+      "cwd": "/path/to/CZ-Dev-RAG"
     }
   }
 }
 ```
 
-Exposed tools: `query_kb(question, mode)` and `list_documents()`. Full details in [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) once phase 07 ships.
+Exposed tools:
+
+- `query_kb(question, mode)` — query the knowledge base. `mode` is one of `naive | local | global | hybrid` (default: `hybrid`). Returns `{answer, sources, latency_ms}`.
+- `list_documents()` — list all ingested documents. Returns `[{doc_id, source_path, ingested_at, chunk_count}, ...]`.
+
+Full component details: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md).
 
 ## Documentation
 
