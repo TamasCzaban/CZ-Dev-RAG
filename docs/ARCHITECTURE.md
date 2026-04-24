@@ -55,6 +55,17 @@ User question (web UI or MCP)
 2. **Document trust** — uploaded docs are trusted by default. Prompt injection from adversarial PDFs is out of scope for v1; mitigations (sandboxing, prompt-strip) are roadmap items.
 3. **Client NDA boundary** — `.gitignore` is the enforcement for "never publish client data." CI has no access to `data/`.
 
+
+## Reranker service detail (phase 03)
+
+- **Image:** `michaelf34/infinity:latest` (infinity-emb, Apache 2.0)
+- **Model:** `BAAI/bge-reranker-v2-m3` — multilingual cross-encoder, supports Hungarian + English
+- **Port:** `7997` (Docker-internal only; no host binding)
+- **Mode:** CPU for v1. VRAM budget on the 3090 leaves ~2 GB headroom after Qwen2.5-32B + BGE-M3, which is not enough for a GPU reranker pass; promote when LLM is swapped to a smaller quant.
+- **API:** POST `/rerank` — body `{"query": "...", "docs": ["...", ...], "top_n": N}` → `{"results": [{"index": int, "relevance_score": float, "document": str}, ...]}`
+- **Python client:** `src/rerank/client.py` — `RerankClient.rerank(query, chunks, top_n)` → sorted list of result dicts
+- **Env vars:** `RERANK_HOST` (default `http://reranker:7997`), `RERANK_TOP_K=20`, `RERANK_TOP_N=5`
+
 ## Further reading
 
 See `docs/DECISIONS.md` for why each component was chosen over alternatives.
