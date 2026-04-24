@@ -83,7 +83,7 @@ def query_lightrag(
         resp = client.post(
             f"{lightrag_url}/query",
             json={"query": question, "mode": mode},
-            timeout=120.0,
+            timeout=300.0,
         )
         resp.raise_for_status()
         data = resp.json()
@@ -136,8 +136,9 @@ def run_ragas(
     """
     import math
 
-    from langchain_community.chat_models import ChatOllama
+    from langchain_ollama import ChatOllama, OllamaEmbeddings
     from ragas import evaluate
+    from ragas.embeddings import LangchainEmbeddingsWrapper
     from ragas.llms import LangchainLLMWrapper
     from ragas.metrics import (
         answer_relevancy,
@@ -148,11 +149,15 @@ def run_ragas(
     llm = ChatOllama(model="qwen2.5:32b", base_url=ollama_base_url)
     ragas_llm = LangchainLLMWrapper(llm)
 
+    embeddings = OllamaEmbeddings(model="bge-m3", base_url=ollama_base_url)
+    ragas_embeddings = LangchainEmbeddingsWrapper(embeddings)
+
     # evaluate() returns EvaluationResult | Executor; cast to Any for .get()
     raw_result: Any = evaluate(
         dataset,
         metrics=[faithfulness, answer_relevancy, context_precision],
         llm=ragas_llm,
+        embeddings=ragas_embeddings,
     )
 
     # result is a dict-like object mapping metric name → score (float or list)
