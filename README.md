@@ -153,6 +153,12 @@ Open the Langfuse UI at `http://localhost:3000` after the stack is up. Full deta
 
 [LightRAG](https://github.com/HKUDS/LightRAG) · [RAG-Anything](https://github.com/HKUDS/RAG-Anything) · [Ollama](https://ollama.com) · [Langfuse](https://langfuse.com) · [Ragas](https://docs.ragas.io) · [MinerU](https://github.com/opendatalab/MinerU) · [Tailscale](https://tailscale.com) · [uv](https://github.com/astral-sh/uv)
 
+## Operations
+
+Full runbook (Tailscale setup, model pulls, backup schedule, restore drill): [`docs/RUNBOOK.md`](./docs/RUNBOOK.md)
+
+Security model and client disclosure language: [`docs/SECURITY.md`](./docs/SECURITY.md)
+
 ## License
 
 MIT — see [LICENSE](./LICENSE).

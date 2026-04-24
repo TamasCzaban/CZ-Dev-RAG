@@ -1,7 +1,7 @@
 # STATE
 
-**Current phase:** phases 03, 04, 07, 10 — PRs open, awaiting review
-**Status:** phases 01 + 02 shipped (merged to main); phases 03, 04, 07, 10 implemented, PRs open
+**Current phase:** phases 03, 04, 07, 09, 10 — PRs open, awaiting review
+**Status:** phases 01 + 02 shipped (merged to main); phases 03, 04, 07, 09, 10 implemented, PRs open
 **Last updated:** 2026-04-24
 
 ## Completed phases
@@ -12,13 +12,13 @@
 - **Phase 04** — Ingestion / delete / backup scripts — PR #16 open on `phase/04-ingest-delete-backup-scripts`
 - **Phase 07** — MCP server (query_kb + list_documents) — PR #17 open on `phase/07-mcp-server`
 - **Phase 10** — Langfuse tracing module — PR #18 open on `phase/10-langfuse-tracing`
+- **Phase 09** — Runbook (Tailscale, model pulls, backup schedule, restore drill) — PR open on `phase/09-runbook-tailscale`
 
 ## Next up
 
 After PRs 15–18 merge:
 - **Phase 05** — Ragas eval harness (unblocked by 02 + 03)
 - **Phase 06** — OCR smoke-test harness (unblocked by 02 + 04)
-- **Phase 09** — Runbook: Tailscale, model pulls, backup schedule (unblocked by 01 + 04)
 
 After 05 + 07 merge:
 - **Phase 08** — GitHub Actions CI (unblocked by 04 + 05 + 07)
@@ -35,5 +35,5 @@ After 05 + 07 merge:
 | 06 | [#7](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/7) | `phase/06-ocr-smoke-tesseract` | planned | 02, 04 |
 | 07 | [#8](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/8) | `phase/07-mcp-server` | PR #17 open | 01 |
 | 08 | [#9](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/9) | `phase/08-ci-workflow` | planned | 04, 05, 07 |
-| 09 | [#10](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/10) | `phase/09-runbook-tailscale` | planned | 01, 04 |
+| 09 | [#10](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/10) | `phase/09-runbook-tailscale` | PR open | 01, 04 |
 | 10 | [#11](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/11) | `phase/10-langfuse-tracing` | PR #18 open | 01 |
