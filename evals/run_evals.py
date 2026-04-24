@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import re
 from datetime import datetime
 from pathlib import Path
@@ -140,7 +141,7 @@ def run_ragas(
     from ragas import evaluate
     from ragas.embeddings import LangchainEmbeddingsWrapper
     from ragas.llms import LangchainLLMWrapper
-    from ragas.metrics import (
+    from ragas.metrics.collections import (
         answer_relevancy,
         context_precision,
         faithfulness,
