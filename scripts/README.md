@@ -24,6 +24,33 @@ Exit code is non-zero if any file fails. All failures are listed in the summary.
 
 ---
 
+## `sync_personal_kb.py` — Sync personal knowledge into `data/input/`
+
+Reads a hardcoded manifest of canonical paths (Claude Code memory files, `LEARNINGS.md`,
+project docs) and copies them into `data/input/` under a human-navigable layout
+(`personal/`, `memory/<project>/`, `learnings/`, `projects/<project>/`). Files with YAML
+frontmatter (memory files) are preprocessed so the description and type become
+first-class searchable headers.
+
+**When to run:** after meaningful changes to your `~/.claude/projects/*/memory/*.md`,
+`LEARNINGS.md`, or per-project docs. Idempotent — unchanged files are skipped.
+
+```bash
+uv run python scripts/sync_personal_kb.py            # do the sync
+uv run python scripts/sync_personal_kb.py --dry-run  # preview
+```
+
+After syncing, ingest the result:
+```bash
+uv run python scripts/ingest.py data/input/ --recursive
+```
+
+The manifest lives in `sync_personal_kb.py` itself. Edit it when new memory directories
+or projects appear. Sources that have moved or been deleted surface as warnings rather
+than failures.
+
+---
+
 ## `delete_by_source.py` — Delete a document by ID
 
 Calls `DELETE /documents/{doc_id}` on the LightRAG API. LightRAG assigns document IDs

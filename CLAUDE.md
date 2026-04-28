@@ -59,6 +59,16 @@ Work is tracked as phases in `ROADMAP.md`. Current phase is recorded in `STATE.m
 - **Eval harness:** _is_ the test for retrieval quality. Runs manually against demo corpus; CI-smoke runs 3-Q mini set only.
 - **OCR:** `evals/ocr_smoke/` — known input → known output, fixture-based.
 
+## Personal KB sync
+
+`data/input/` is the live ingest tree. Beyond the demo corpus, it now contains a synced snapshot of personal knowledge sources — `~/.claude/projects/*/memory/*.md`, populated `LEARNINGS.md` files, and project-level docs (CLAUDE.md, ROADMAP, STATE, ARCHITECTURE, DECISIONS, RUNBOOK). The canonical sources live outside this repo; the snapshot is reproduced here so LightRAG can ingest them.
+
+- Sync from canonical sources: `uv run python scripts/sync_personal_kb.py` (idempotent — skips unchanged files).
+- After sync, ingest: `uv run python scripts/ingest.py data/input/ --recursive`.
+- The manifest is in `scripts/sync_personal_kb.py`; edit it when new memory dirs or projects appear.
+
+`data/` stays gitignored, so synced personal content never enters the public repo.
+
 ## Commit + push
 
 Tamas has pre-authorized `git push` to this repo. Create commits with Claude co-author footer. Don't skip hooks.
