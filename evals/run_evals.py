@@ -145,8 +145,9 @@ def run_ragas(
     from ragas import evaluate
     from ragas.embeddings import LangchainEmbeddingsWrapper
     from ragas.llms import LangchainLLMWrapper
+    from ragas.run_config import RunConfig
 
-    llm_model = os.environ.get("LLM_MODEL", "qwen2.5:32b-instruct-q4_K_M")
+    llm_model = os.environ.get("RAGAS_LLM_MODEL") or os.environ.get("LLM_MODEL", "qwen2.5:32b-instruct-q4_K_M")
     embed_model = os.environ.get("EMBEDDING_MODEL", "bge-m3:latest")
 
     ragas_llm = LangchainLLMWrapper(ChatOllama(model=llm_model, base_url=ollama_base_url))
@@ -166,26 +167,21 @@ def run_ragas(
         context_precision.llm = ragas_llm
         metrics = [faithfulness, answer_relevancy, context_precision]
 
-    # evaluate() returns EvaluationResult | Executor; cast to Any for .get()
+    # Throttle to 2 parallel calls — local 32B model can't handle Ragas's default 16
+    run_config = RunConfig(max_workers=2, timeout=600)
     raw_result: Any = evaluate(
         dataset,
         metrics=metrics,
         llm=ragas_llm,
         embeddings=ragas_embeddings,
+        run_config=run_config,
     )
 
-    # result is a dict-like object mapping metric name → score (float or list)
+    df = raw_result.to_pandas()
     averages: dict[str, float] = {}
     for metric_name in METRICS_NAMES:
-        raw = raw_result.get(metric_name)
-        if raw is None:
-            averages[metric_name] = float("nan")
-            continue
-        if isinstance(raw, (int, float)):
-            averages[metric_name] = float(raw)
-        elif isinstance(raw, list):
-            valid = [v for v in raw if v is not None and not math.isnan(float(v))]
-            averages[metric_name] = sum(valid) / len(valid) if valid else float("nan")
+        if metric_name in df.columns:
+            averages[metric_name] = float(df[metric_name].dropna().mean())
         else:
             averages[metric_name] = float("nan")
     return averages

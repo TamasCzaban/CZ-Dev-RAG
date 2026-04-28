@@ -95,14 +95,14 @@ All of these queries have known-good answers in the corpus; they're the same que
 ## Evaluation results
 
 <!-- EVAL:START -->
-_Eval harness lands in phase 05 — table will be auto-populated from `evals/results/<timestamp>.csv` by `evals/run_evals.py --output-readme`._
+_Last updated: 2026-04-27 19:03 UTC_
 
 | Mode    | Faithfulness | Answer Relevancy | Context Precision |
 |---------|--------------|------------------|-------------------|
-| naive   | —            | —                | —                 |
-| local   | —            | —                | —                 |
-| global  | —            | —                | —                 |
-| hybrid  | —            | —                | —                 |
+| naive   | 0.975        | 0.897            | 0.950             |
+| local   | 0.992        | 0.877            | 0.950             |
+| global  | 0.969        | 0.867            | 0.950             |
+| hybrid  | 1.000        | 0.861            | 1.000             |
 <!-- EVAL:END -->
 
 ## MCP server

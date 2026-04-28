@@ -76,3 +76,4 @@ ollama_models/
 # Backup artifacts
 *.restic
 backup-*.tar.gz
+evals/results/

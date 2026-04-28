@@ -1,5 +1,9 @@
 # CZ-Dev-RAG — Project Instructions
 
+## Session startup
+
+At the start of every session run: `ollama serve > /tmp/ollama.log 2>&1 & powershell.exe -c 'Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe"'` — then wait ~30 s before using Docker or Ollama.
+
 ## What this project is
 
 Local knowledge base for CZ Dev agency using LightRAG + RAG-Anything. Hosted on Tamas's RTX 3090 (Windows 11 + native Ollama + Docker Desktop), shared with Zsombor via Tailscale. Public GitHub repo; client data never committed.
