@@ -10,6 +10,11 @@ Kept here so Claude and future maintainers don't repeat the same debug sessions.
 
 ## LightRAG + Ollama on Windows (RTX 3090)
 
+### 2026-04-29 · /learn · OLLAMA_NUM_PARALLEL needs full Ollama restart
+- `OLLAMA_NUM_PARALLEL=2` host-side + `MAX_ASYNC=4` LightRAG-side: 4 LightRAG workers queue into Ollama's 2 concurrent slots — saturates the 3090 without the Ollama OOM crash that NUM_PARALLEL=2 alone induces (Qwen2.5-32B-Q4 asks 19.9 GiB, only 18.2 GiB free under load).
+- `setx OLLAMA_NUM_PARALLEL 2` writes to user registry only. Already-running `ollama.exe` keeps the stale env. The Windows tray supervisor `ollama app.exe` ALSO has to be killed — it auto-respawns `ollama.exe` from its own env scope. Kill both, then `ollama serve &` to apply.
+- Reference: `.env.example` (commit `ddfc955`); tray-supervisor specifics not yet documented.
+
 ### OLLAMA_HOST env var collision
 **Problem:** Windows users often set `OLLAMA_HOST=0.0.0.0` in the registry so
 `ollama serve` binds to all interfaces. Docker Compose interpolates this env var
@@ -166,6 +171,16 @@ Qwen2.5-32B Q4_K_M.
 
 ## Ingestion Workflow
 
+### 2026-04-29 · /learn · LightRAG bind-mount breaks on project folder rename
+- LightRAG's container bind-mounts `data/rag_storage/` using the host path from creation time. Renaming the host folder (e.g. `CZ-Dev-RAG` → `cz_dev_rag`) leaves the container pointed at the old path — mount fails silently, graph dir appears empty.
+- Symptom: every query returns `[no-context]` and Ragas scores read 0.0 across the board (not NaN — the LLM successfully generates the canned "Sorry, I'm not able to provide an answer to that question.[no-context]" response).
+- Fix: `docker compose down && docker compose up -d` from the new path to recreate containers with the correct mount source.
+
+### 2026-04-29 · /learn · Rich progress bar masks LightRAG querying-phase wall time
+- `evals/run_evals.py` uses tqdm/Rich with `\r` (no newline). When `tail -3 /tmp/evals_run.log` shows the same line for 40+ minutes, the run isn't hung — it's in the LightRAG querying phase, which emits no log output at the wrapper level.
+- Per-mode querying with Qwen2.5-32B can take 10-15 min for `local`/`global` modes (graph traversal); scoring with the lighter judge model is only ~3 min/mode by comparison.
+- Sanity check progress: `docker logs cz-dev-rag-lightrag 2>&1 | grep -c 'POST /query'` — should reach 20 per mode.
+
 ### Re-ingestion after failure
 LightRAG persists document state to `data/rag_storage/`. After a failure:
 1. `POST /documents/reprocess_failed` — re-queues all failed docs.
@@ -181,6 +196,30 @@ Use `curl localhost:11434/api/tags` for the authoritative model list.
 - `GET /documents/status_counts` — totals only, fast for polling.
 - `GET /documents` — per-doc breakdown with `error_msg` fields.
 - `GET /documents/pipeline_status` — current job name, busy flag, latest message.
+
+---
+
+## Ragas Evaluation
+
+### 2026-04-29 · /learn · Ragas 0.4 EvaluationResult has no .get()
+- Ragas 0.4's `evaluate()` returns an `EvaluationResult` that supports `[]` indexing but not `.get()`. Calling `raw_result.get(metric_name)` raises `AttributeError: 'EvaluationResult' object has no attribute 'get'`.
+- Fix: `result.to_pandas()[metric_name].mean()` to read column means. The pre-0.4 `.get()` pattern silently broke on upgrade.
+- Reference: `evals/run_evals.py:180` (commit `f138840`).
+
+### 2026-04-29 · /learn · Ragas 0.4 metrics: singletons vs Pydantic instances
+- `evaluate()` does `isinstance(m, Metric)` where `Metric` is the old `@dataclass` base. The new `ragas.metrics.collections.*` classes inherit from Pydantic `BaseMetric` and FAIL the isinstance check — silently dropped from the run with no error, just zero output.
+- Fix: keep using the deprecated singletons (`from ragas.metrics import faithfulness`) and set `.llm` / `.embeddings` on them. They're scheduled for removal in v1.0 only.
+- Reference: `evals/run_evals.py` (commit `f138840`).
+
+### 2026-04-29 · /learn · Ragas default concurrency saturates one Ollama
+- Without `RunConfig(max_workers=...)`, Ragas 0.4 fires every metric × every question in parallel. For a 20-question gold set × 3 metrics = 60 simultaneous requests against a single Ollama instance.
+- Qwen2.5-32B-Q4 on a 3090 can't absorb that — most calls raise `ConnectError` / `TimeoutError`, score `NaN`, and the run "completes" with an all-NaN result table.
+- Fix: pass `RunConfig(max_workers=2, timeout=600)` to `evaluate()`. Drops a "completed but useless" 10 min run to a real ~40 min/mode run with valid scores.
+
+### 2026-04-29 · /learn · Hardcoded `qwen2.5:32b` returns 404 from Ollama
+- The pulled model name is `qwen2.5:32b-instruct-q4_K_M`, NOT the shorthand `qwen2.5:32b`. Hardcoding the short form in Ragas LLM config returns HTTP 404 from Ollama; Ragas swallows the error and emits 0.0 for every metric.
+- Fix: read `LLM_MODEL` from env with the exact pulled name as default.
+- Reference: `evals/run_evals.py` (commit `c8578a6`).
 
 ---
 
