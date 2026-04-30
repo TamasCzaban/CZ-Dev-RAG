@@ -1,7 +1,7 @@
 # STATE
 
-**Current phase:** Phase 14 (next) — Tailscale rollout in progress
-**Status:** 13/17 phases done (phases 01–13 complete); 3 manual items pending (see below)
+**Current phase:** Phase 15 [HITL] — invite Zsombor to tailnet
+**Status:** 14/17 phases done (phases 01–14 complete)
 **Last updated:** 2026-04-30
 
 ## All phases merged to main
@@ -19,17 +19,17 @@
 - **Phase 11** — Compose profile for client-only MCP — PR [#34](https://github.com/TamasCzaban/CZ-Dev-RAG/pull/34) merged
 - **Phase 12** — File Tailscale SSH follow-up issue + update ADR-008 rollout status — PR [#36](https://github.com/TamasCzaban/CZ-Dev-RAG/pull/36) merged
 - **Phase 13** — Install Tailscale on host + MagicDNS — DONE (`desktop-rh9a2o7.tailabdd49.ts.net`, IP `100.105.249.5`)
+- **Phase 14** — Device tagging + ACL — DONE (ACL saved; `desktop-rh9a2o7` tagged `tag:rag-host`)
 
-## Tailscale rollout phases (14–17) — remaining
+## Tailscale rollout phases (15–17) — remaining
 
 | Phase | Branch | Status | Issue |
 |-------|--------|--------|-------|
-| Phase 14 [HITL] | `phase/14-tailscale-acl-device-tags` | NOT STARTED | [#30](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/30) |
 | Phase 15 [HITL] | `phase/15-invite-zsombor-tailnet` | NOT STARTED | [#31](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/31) |
 | Phase 16 | `phase/16-runbook-magicdns-zsombor-setup` | NOT STARTED | [#32](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/32) |
 | Phase 17 [HITL] | `phase/17-e2e-smoke-test-zsombor` | NOT STARTED | [#33](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/33) |
 
-Next executable phase: **Phase 14** [HITL — Tailscale admin console: device tagging + ACL]
+Next action: **Phase 15** [HITL — invite Zsombor via Tailscale admin console]
 
 ---
 
