@@ -17,6 +17,22 @@
 - **Phase 09** — Runbook: Tailscale, model pulls, backup schedule, restore drill
 - **Phase 10** — Langfuse tracing module
 
+## Tailscale rollout phases (11–17) — NEW
+
+| Phase | Branch | Status | Issue |
+|-------|--------|--------|-------|
+| Phase 11 | `phase/11-compose-client-mcp-profile` | NOT STARTED | [#27](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/27) |
+| Phase 12 | `phase/12-tailscale-ssh-issue-adr008` | NOT STARTED | [#28](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/28) |
+| Phase 13 [HITL] | `phase/13-install-tailscale-magicdns` | NOT STARTED | [#29](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/29) |
+| Phase 14 [HITL] | `phase/14-tailscale-acl-device-tags` | NOT STARTED | [#30](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/30) |
+| Phase 15 [HITL] | `phase/15-invite-zsombor-tailnet` | NOT STARTED | [#31](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/31) |
+| Phase 16 | `phase/16-runbook-magicdns-zsombor-setup` | NOT STARTED | [#32](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/32) |
+| Phase 17 [HITL] | `phase/17-e2e-smoke-test-zsombor` | NOT STARTED | [#33](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/33) |
+
+Next executable phase: **Phase 11** (or Phase 12 — both have no blockers and can run in parallel)
+
+---
+
 ## Manual items still pending (human action required)
 
 | Item | What to do |

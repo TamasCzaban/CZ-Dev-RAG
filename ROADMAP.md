@@ -86,6 +86,55 @@ _Populated by Phase 4 of the `/idea-to-plan` pipeline. See the Decision Summary 
 - **Testing Strategy:** Unit test (`tests/test_tracing.py`) — mock Langfuse client, assert `trace_query` emits span with expected shape (fields present, types correct). Integration smoke — run a demo query, assert a new span appears in Langfuse within 5s.
 - **Status:** planned
 
+### Phase 11 — Compose profile for client-only MCP
+- **Issue:** [#27](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/27)
+- **Branch:** `phase/11-compose-client-mcp-profile`
+- **Depends on:** _none_
+- **Testing Strategy:** Integration smoke — `docker compose up mcp --no-deps -d` on a machine without a local LightRAG stack; verify no dependent containers (lightrag, reranker, langfuse) are started. Source: `docker-compose.yml` `mcp` service. If `--no-deps` is insufficient, `profiles: [client]` is added and the same check is re-run.
+- **Status:** NOT STARTED
+
+### Phase 12 — File Tailscale SSH follow-up issue + update ADR-008 rollout status
+- **Issue:** [#28](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/28)
+- **Branch:** `phase/12-tailscale-ssh-issue-adr008`
+- **Depends on:** _none_ (can run any time; ideally after rollout is complete so the ADR-008 date is real)
+- **Testing Strategy:** None (docs-only + GH issue creation). Reason: this phase appends text to `docs/DECISIONS.md` and creates one GitHub issue — no code changed, no runtime behaviour.
+- **Status:** NOT STARTED
+
+### Phase 13 — Install Tailscale on host + enable MagicDNS [HITL]
+- **Issue:** [#29](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/29)
+- **Branch:** `phase/13-install-tailscale-magicdns`
+- **Depends on:** _none_
+- **Testing Strategy:** None (HITL infra slice). Reason: involves OS-level installer + browser-based SSO auth; no automated test possible. Validation is manual: `tailscale status` shows host with MagicDNS hostname.
+- **Status:** NOT STARTED
+
+### Phase 14 — Tailscale admin — device tagging + tag-based ACL [HITL]
+- **Issue:** [#30](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/30)
+- **Branch:** `phase/14-tailscale-acl-device-tags`
+- **Depends on:** Phase 13
+- **Testing Strategy:** None (HITL admin console). Reason: ACL JSON is entered in the Tailscale web console, not a file in this repo. Validation is manual: `curl http://<tailnet-host>:9621/health` from a `tag:rag-user` device returns 200.
+- **Status:** NOT STARTED
+
+### Phase 15 — Invite Zsombor to tailnet via Google SSO + assign tag:rag-user [HITL]
+- **Issue:** [#31](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/31)
+- **Branch:** `phase/15-invite-zsombor-tailnet`
+- **Depends on:** Phase 13, Phase 14
+- **Testing Strategy:** None (HITL — requires human action on Zsombor's machine). Validation: `tailscale status` on Tamas's host shows Zsombor's device as a peer; `curl` from Zsombor's machine returns HTTP 200 on port 9621.
+- **Status:** NOT STARTED
+
+### Phase 16 — Update RUNBOOK.md — MagicDNS hostname + Zsombor first-time setup section
+- **Issue:** [#32](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/32)
+- **Branch:** `phase/16-runbook-magicdns-zsombor-setup`
+- **Depends on:** Phase 11, Phase 13, Phase 15
+- **Testing Strategy:** None (docs-only slice). Reason: `docs/RUNBOOK.md` markdown updates only; CI ruff/mypy passes trivially. Validation is human-readability check + used directly in Phase 17 smoke test.
+- **Status:** NOT STARTED
+
+### Phase 17 — End-to-end smoke test from Zsombor's clean machine [HITL]
+- **Issue:** [#33](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/33)
+- **Branch:** `phase/17-e2e-smoke-test-zsombor`
+- **Depends on:** Phase 11, Phase 13, Phase 14, Phase 15, Phase 16
+- **Testing Strategy:** None (HITL — real Zsombor on a real machine). This phase IS the integration test for the entire Tailscale rollout. Acceptance criteria: ingest of demo-corpus exits 0, MCP query_kb returns non-empty answer, ACL negative test passes. No automated proxy.
+- **Status:** NOT STARTED
+
 <!-- PHASES:END -->
 
 ## Out of scope for v1
