@@ -105,7 +105,7 @@ _Populated by Phase 4 of the `/idea-to-plan` pipeline. See the Decision Summary 
 - **Branch:** `phase/13-install-tailscale-magicdns`
 - **Depends on:** _none_
 - **Testing Strategy:** None (HITL infra slice). Reason: involves OS-level installer + browser-based SSO auth; no automated test possible. Validation is manual: `tailscale status` shows host with MagicDNS hostname.
-- **Status:** NOT STARTED
+- **Status:** DONE — `tailscale ip -4` → `100.105.249.5`; MagicDNS enabled; hostname `desktop-rh9a2o7.tailabdd49.ts.net`
 
 ### Phase 14 — Tailscale admin — device tagging + tag-based ACL [HITL]
 - **Issue:** [#30](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/30)
