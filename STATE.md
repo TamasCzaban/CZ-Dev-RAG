@@ -1,7 +1,7 @@
 # STATE
 
-**Current phase:** Phase 14 (next) — Tailscale rollout in progress
-**Status:** 13/17 phases done (phases 01–13 complete); 3 manual items pending (see below)
+**Current phase:** Phase 14 [HITL] — awaiting manual Tailscale admin console steps
+**Status:** 13/17 phases done (phases 01–13 complete); Phase 14 PLAN_READY, awaiting human action
 **Last updated:** 2026-04-30
 
 ## All phases merged to main
@@ -24,12 +24,12 @@
 
 | Phase | Branch | Status | Issue |
 |-------|--------|--------|-------|
-| Phase 14 [HITL] | `phase/14-tailscale-acl-device-tags` | NOT STARTED | [#30](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/30) |
+| Phase 14 [HITL] | `phase/14-tailscale-acl-device-tags` | PLAN_READY — awaiting human | [#30](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/30) |
 | Phase 15 [HITL] | `phase/15-invite-zsombor-tailnet` | NOT STARTED | [#31](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/31) |
 | Phase 16 | `phase/16-runbook-magicdns-zsombor-setup` | NOT STARTED | [#32](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/32) |
 | Phase 17 [HITL] | `phase/17-e2e-smoke-test-zsombor` | NOT STARTED | [#33](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/33) |
 
-Next executable phase: **Phase 14** [HITL — Tailscale admin console: device tagging + ACL]
+Next action: **Human** — follow `.planning/phases/14-tailscale-acl-device-tags/PLAN.md` to complete Phase 14 in the Tailscale admin console.
 
 ---
 
@@ -37,6 +37,7 @@ Next executable phase: **Phase 14** [HITL — Tailscale admin console: device ta
 
 | Item | What to do |
 |------|-----------|
+| **Phase 14 ACL** | Follow `.planning/phases/14-tailscale-acl-device-tags/PLAN.md` — define tags + paste ACL JSON at login.tailscale.com/admin/acls, assign `tag:rag-host` to `desktop-rh9a2o7` |
 | **Phase 08 branch protection** | GitHub Settings → Branches → main → required status checks: `lint`, `typecheck`, `test`, `compose-smoke` |
 | **Phase 09 restore drill** | `bash scripts/backup.sh` (with B2 creds in .env), then delete `data/rag_storage/`, restore from restic snapshot, run sanity query. See `docs/RUNBOOK.md` § Restore drill. |
 | **Phase 06 OCR fixtures** | Replace stub PDFs in `evals/ocr_smoke/` with real public-domain Hungarian text scans. See `evals/ocr_smoke/README.md`. Also: install `tesseract-ocr` + `tesseract-ocr-hun` + `poppler-utils` on host. |
