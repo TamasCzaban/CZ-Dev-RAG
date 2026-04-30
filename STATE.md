@@ -1,8 +1,8 @@
 # STATE
 
-**Current phase:** complete — all 10 phases shipped
-**Status:** 10/10 phases merged to main; CI green; 3 manual items pending (see below)
-**Last updated:** 2026-04-24
+**Current phase:** Phase 13 (next) — Tailscale rollout in progress
+**Status:** 12/17 phases merged to main (phases 01–12 done); 3 manual items pending (see below)
+**Last updated:** 2026-04-30
 
 ## All phases merged to main
 
@@ -16,20 +16,20 @@
 - **Phase 08** — GitHub Actions CI (lint, typecheck, test, compose-smoke)
 - **Phase 09** — Runbook: Tailscale, model pulls, backup schedule, restore drill
 - **Phase 10** — Langfuse tracing module
+- **Phase 11** — Compose profile for client-only MCP — PR [#34](https://github.com/TamasCzaban/CZ-Dev-RAG/pull/34) merged
+- **Phase 12** — File Tailscale SSH follow-up issue + update ADR-008 rollout status — PR [#36](https://github.com/TamasCzaban/CZ-Dev-RAG/pull/36) merged
 
-## Tailscale rollout phases (11–17) — NEW
+## Tailscale rollout phases (13–17) — remaining
 
 | Phase | Branch | Status | Issue |
 |-------|--------|--------|-------|
-| Phase 11 | `phase/11-compose-client-mcp-profile` | NOT STARTED | [#27](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/27) |
-| Phase 12 | `phase/12-tailscale-ssh-issue-adr008` | NOT STARTED | [#28](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/28) |
 | Phase 13 [HITL] | `phase/13-install-tailscale-magicdns` | NOT STARTED | [#29](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/29) |
 | Phase 14 [HITL] | `phase/14-tailscale-acl-device-tags` | NOT STARTED | [#30](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/30) |
 | Phase 15 [HITL] | `phase/15-invite-zsombor-tailnet` | NOT STARTED | [#31](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/31) |
 | Phase 16 | `phase/16-runbook-magicdns-zsombor-setup` | NOT STARTED | [#32](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/32) |
 | Phase 17 [HITL] | `phase/17-e2e-smoke-test-zsombor` | NOT STARTED | [#33](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/33) |
 
-Next executable phase: **Phase 11** (or Phase 12 — both have no blockers and can run in parallel)
+Next executable phase: **Phase 13** [HITL — requires OS-level Tailscale install + browser SSO]
 
 ---
 

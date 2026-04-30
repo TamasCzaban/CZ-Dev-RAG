@@ -98,7 +98,7 @@ _Populated by Phase 4 of the `/idea-to-plan` pipeline. See the Decision Summary 
 - **Branch:** `phase/12-tailscale-ssh-issue-adr008`
 - **Depends on:** _none_ (can run any time; ideally after rollout is complete so the ADR-008 date is real)
 - **Testing Strategy:** None (docs-only + GH issue creation). Reason: this phase appends text to `docs/DECISIONS.md` and creates one GitHub issue — no code changed, no runtime behaviour.
-- **Status:** NOT STARTED
+- **Status:** DONE — PR [#36](https://github.com/TamasCzaban/CZ-Dev-RAG/pull/36) merged 2026-04-30
 
 ### Phase 13 — Install Tailscale on host + enable MagicDNS [HITL]
 - **Issue:** [#29](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/29)
