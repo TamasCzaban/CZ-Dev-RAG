@@ -112,7 +112,7 @@ _Populated by Phase 4 of the `/idea-to-plan` pipeline. See the Decision Summary 
 - **Branch:** `phase/14-tailscale-acl-device-tags`
 - **Depends on:** Phase 13
 - **Testing Strategy:** None (HITL admin console). Reason: ACL JSON is entered in the Tailscale web console, not a file in this repo. Validation is manual: `curl http://<tailnet-host>:9621/health` from a `tag:rag-user` device returns 200.
-- **Status:** PLAN_READY — HITL gate; see `.planning/phases/14-tailscale-acl-device-tags/PLAN.md`
+- **Status:** DONE — ACL saved (tag:rag-host/tag:rag-user defined); desktop-rh9a2o7 tagged as tag:rag-host
 
 ### Phase 15 — Invite Zsombor to tailnet via Google SSO + assign tag:rag-user [HITL]
 - **Issue:** [#31](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/31)
