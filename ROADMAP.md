@@ -91,7 +91,7 @@ _Populated by Phase 4 of the `/idea-to-plan` pipeline. See the Decision Summary 
 - **Branch:** `phase/11-compose-client-mcp-profile`
 - **Depends on:** _none_
 - **Testing Strategy:** Integration smoke — `docker compose up mcp --no-deps -d` on a machine without a local LightRAG stack; verify no dependent containers (lightrag, reranker, langfuse) are started. Source: `docker-compose.yml` `mcp` service. If `--no-deps` is insufficient, `profiles: [client]` is added and the same check is re-run.
-- **Status:** NOT STARTED
+- **Status:** DONE
 
 ### Phase 12 — File Tailscale SSH follow-up issue + update ADR-008 rollout status
 - **Issue:** [#28](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/28)
