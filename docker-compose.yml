@@ -1,4 +1,13 @@
 services:
+  # ---------------------------------------------------------------------------
+  # lightrag — always-on query service
+  #
+  # Uses a small fast model (7B) for answer synthesis. Queries hit this.
+  # VRAM budget (query path, 3090 24 GB):
+  #   qwen2.5:7b-instruct Q4   ~4.5 GB
+  #   BGE-M3 (embedding)        ~1.5 GB
+  #   headroom                  ~18 GB free for OS + other tasks
+  # ---------------------------------------------------------------------------
   lightrag:
     image: ghcr.io/hkuds/lightrag:latest
     container_name: cz-dev-rag-lightrag
@@ -12,14 +21,14 @@ services:
       INPUT_DIR: /app/data/input
       LLM_BINDING: ollama
       LLM_BINDING_HOST: http://host.docker.internal:11434
-      LLM_MODEL: ${LLM_MODEL:-qwen2.5:32b-instruct-q4_K_M}
+      LLM_MODEL: ${QUERY_LLM_MODEL:-qwen2.5:7b-instruct}
       EMBEDDING_BINDING: ollama
       EMBEDDING_BINDING_HOST: http://host.docker.internal:11434
       EMBEDDING_MODEL: ${EMBEDDING_MODEL:-bge-m3:latest}
       EMBEDDING_DIM: ${EMBEDDING_DIM:-1024}
       MAX_ASYNC: ${MAX_ASYNC:-1}
       TIMEOUT: 0
-      LLM_TIMEOUT: ${LLM_TIMEOUT:-1800}
+      LLM_TIMEOUT: ${LLM_TIMEOUT:-300}
       EMBEDDING_TIMEOUT: ${EMBEDDING_TIMEOUT:-300}
       EMBEDDING_FUNC_MAX_ASYNC: ${EMBEDDING_FUNC_MAX_ASYNC:-2}
       LIGHTRAG_MODE_DEFAULT: ${LIGHTRAG_MODE_DEFAULT:-hybrid}
@@ -36,17 +45,67 @@ services:
       start_period: 60s
 
   # ---------------------------------------------------------------------------
+  # lightrag-ingest — on-demand ingestion service (32B model)
+  #
+  # Spin up only when ingesting new documents — Ollama can't hold both 32B
+  # and 7B in VRAM simultaneously on a 3090 (18 + 4.5 + 1.5 ≈ 24 GB limit).
+  # Shares the same rag_storage volume as the query service so the graph is
+  # immediately available to queries after ingestion completes.
+  #
+  # Usage:
+  #   docker compose --profile ingest up lightrag-ingest   # start
+  #   docker compose --profile ingest stop lightrag-ingest  # stop when done
+  #
+  # VRAM budget (ingest path, 3090 24 GB):
+  #   qwen2.5:32b-instruct Q4_K_M   ~18 GB
+  #   BGE-M3 (embedding)             ~1.5 GB
+  #   total                          ~19.5 GB ✓
+  # ---------------------------------------------------------------------------
+  lightrag-ingest:
+    image: ghcr.io/hkuds/lightrag:latest
+    container_name: cz-dev-rag-lightrag-ingest
+    profiles: [ingest]
+    restart: "no"
+    ports:
+      - "${LIGHTRAG_INGEST_PORT:-9622}:9621"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 9621
+      WORKING_DIR: ${WORKING_DIR:-/app/data/rag_storage}
+      INPUT_DIR: /app/data/input
+      LLM_BINDING: ollama
+      LLM_BINDING_HOST: http://host.docker.internal:11434
+      LLM_MODEL: ${INGEST_LLM_MODEL:-qwen2.5:32b-instruct-q4_K_M}
+      EMBEDDING_BINDING: ollama
+      EMBEDDING_BINDING_HOST: http://host.docker.internal:11434
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-bge-m3:latest}
+      EMBEDDING_DIM: ${EMBEDDING_DIM:-1024}
+      MAX_ASYNC: ${INGEST_MAX_ASYNC:-1}
+      TIMEOUT: 0
+      LLM_TIMEOUT: ${INGEST_LLM_TIMEOUT:-1800}
+      EMBEDDING_TIMEOUT: ${EMBEDDING_TIMEOUT:-300}
+      EMBEDDING_FUNC_MAX_ASYNC: ${EMBEDDING_FUNC_MAX_ASYNC:-2}
+    volumes:
+      - ./data/input:/app/data/input
+      - ./data/rag_storage:/app/data/rag_storage
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:9621/health', timeout=5).status==200 else 1)\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # ---------------------------------------------------------------------------
   # BGE-reranker-v2-m3 — cross-encoder reranking via infinity-emb
   #
-  # Runs on CPU to keep VRAM free for Qwen2.5-32B + BGE-M3 on the 3090.
-  # Total VRAM budget on the 3090:
-  #   Qwen2.5-32B Q4_K_M   ~18 GB
-  #   BGE-M3 (embedding)   ~ 2 GB
-  #   BGE-reranker-v2-m3   ~ 1-2 GB (would push past 24 GB limit)
-  # Reranker is CPU-mode for v1; promote to GPU when running on multi-GPU or
-  # after migrating LLM to a quantised < 16 GB variant.
-  # Switch to GPU: change `--device cpu` to `--device cuda` and uncomment the
-  # deploy.resources.reservations.devices stanza below.
+  # Runs on CPU. VRAM during normal operation (query path, 7B loaded):
+  #   qwen2.5:7b-instruct Q4   ~4.5 GB
+  #   BGE-M3 (embedding)        ~1.5 GB
+  #   BGE-reranker-v2-m3        ~1-2 GB GPU (enough headroom now)
+  # To enable GPU reranking: change `--device cpu` to `--device cuda` and
+  # uncomment the deploy.resources.reservations.devices stanza below.
   # ---------------------------------------------------------------------------
   reranker:
     image: michaelf34/infinity:latest
