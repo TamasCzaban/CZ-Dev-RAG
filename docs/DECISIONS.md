@@ -100,6 +100,8 @@ Format: `ADR-NNN` · short title · date · status.
 
 **Consequences:** If Tamas's Tailscale auth key leaks, the KB is exposed to that device — document key rotation in the runbook. A future client-facing SaaS version would need real auth; explicitly out of v1 scope.
 
+**Rollout status (2026-04-30):** Tailscale v1 rollout completed (Phases 13–17). Both Tamas and Zsombor can reach LightRAG + MCP over the tailnet. Tailscale SSH (Tamas-only convenience access) was intentionally deferred — tracked in [#35](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/35).
+
 ---
 
 ## ADR-009 · MCP server wrapper as a first-class component · 2026-04-24 · accepted
