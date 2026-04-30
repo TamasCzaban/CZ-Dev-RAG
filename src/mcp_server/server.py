@@ -59,7 +59,7 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[types.TextCont
                     {"error": f"Invalid mode '{mode}'. Choose from {sorted(VALID_MODES)}."}
                 ))]
             t0 = time.monotonic()
-            raw = client.query(question, mode)
+            raw = await client.query(question, mode)
             latency_ms = int((time.monotonic() - t0) * 1000)
             answer = raw.get("response") or raw.get("answer") or str(raw)
             result: dict[str, Any] = {
@@ -68,7 +68,7 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[types.TextCont
             return [types.TextContent(type="text", text=json.dumps(result))]
 
         if name == "list_documents":
-            docs = client.list_documents()
+            docs = await client.list_documents()
             normalized = [
                 {
                     "doc_id": d.get("id", d.get("doc_id", "")),
@@ -89,7 +89,7 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[types.TextCont
     except Exception as exc:
         return [types.TextContent(type="text", text=json.dumps({"error": str(exc)}))]
     finally:
-        client.close()
+        await client.close()
 
 
 async def main() -> None:
