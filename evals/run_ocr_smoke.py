@@ -52,7 +52,7 @@ def _edit_distance(a: str, b: str) -> int:
     a pure-Python implementation so the harness still works without it.
     """
     try:
-        import Levenshtein  # type: ignore[import]
+        import Levenshtein
 
         return int(Levenshtein.distance(a, b))
     except ImportError:
@@ -152,7 +152,7 @@ def main(
     _repo_root = Path(__file__).parent.parent
     if str(_repo_root / "src") not in sys.path:
         sys.path.insert(0, str(_repo_root / "src"))
-    from ocr import get_ocr_engine  # type: ignore[import]
+    from ocr import get_ocr_engine
 
     try:
         engine = get_ocr_engine(resolved_engine)

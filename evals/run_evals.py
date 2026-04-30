@@ -138,7 +138,6 @@ def run_ragas(
 
     Returns NaN-safe floats — individual NaNs are dropped from the average.
     """
-    import math
     import warnings
 
     from langchain_ollama import ChatOllama, OllamaEmbeddings
@@ -147,11 +146,15 @@ def run_ragas(
     from ragas.llms import LangchainLLMWrapper
     from ragas.run_config import RunConfig
 
-    llm_model = os.environ.get("RAGAS_LLM_MODEL") or os.environ.get("LLM_MODEL", "qwen2.5:32b-instruct-q4_K_M")
+    llm_model = os.environ.get("RAGAS_LLM_MODEL") or os.environ.get(
+        "LLM_MODEL", "qwen2.5:32b-instruct-q4_K_M"
+    )
     embed_model = os.environ.get("EMBEDDING_MODEL", "bge-m3:latest")
 
     ragas_llm = LangchainLLMWrapper(ChatOllama(model=llm_model, base_url=ollama_base_url))
-    ragas_embeddings = LangchainEmbeddingsWrapper(OllamaEmbeddings(model=embed_model, base_url=ollama_base_url))
+    ragas_embeddings = LangchainEmbeddingsWrapper(
+        OllamaEmbeddings(model=embed_model, base_url=ollama_base_url)
+    )
 
     # Ragas 0.4 evaluate() requires the old dataclass-based Metric singletons
     # (ragas.metrics.*), not the new Pydantic BaseMetric classes from
@@ -159,7 +162,7 @@ def run_ragas(
     # The singletons are deprecated but won't be removed until v1.0.
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", DeprecationWarning)
-        from ragas.metrics import answer_relevancy, context_precision, faithfulness  # noqa: PLC0415
+        from ragas.metrics import answer_relevancy, context_precision, faithfulness
 
         faithfulness.llm = ragas_llm
         answer_relevancy.llm = ragas_llm
