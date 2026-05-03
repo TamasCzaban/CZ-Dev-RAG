@@ -119,7 +119,7 @@ _Populated by Phase 4 of the `/idea-to-plan` pipeline. See the Decision Summary 
 - **Branch:** `phase/15-invite-zsombor-tailnet`
 - **Depends on:** Phase 13, Phase 14
 - **Testing Strategy:** None (HITL — requires human action on Zsombor's machine). Validation: `tailscale status` on Tamas's host shows Zsombor's device as a peer; `curl` from Zsombor's machine returns HTTP 200 on port 9621.
-- **Status:** NOT STARTED
+- **Status:** AWAITING_REVIEW — PLAN.md written at `.planning/phases/15-invite-zsombor-tailnet/PLAN.md`; all steps are HITL
 
 ### Phase 16 — Update RUNBOOK.md — MagicDNS hostname + Zsombor first-time setup section
 - **Issue:** [#32](https://github.com/TamasCzaban/CZ-Dev-RAG/issues/32)

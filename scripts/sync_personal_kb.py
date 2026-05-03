@@ -86,7 +86,9 @@ def _split_by_headers(text: str, *, max_chars: int) -> list[str]:
     return ["".join(bucket).strip() + "\n" for bucket in buckets]
 
 
-def _split_entries(src: Path, *dest_parts: str, stem: str = "", max_chars: int = 2500) -> list[Entry]:
+def _split_entries(
+    src: Path, *dest_parts: str, stem: str = "", max_chars: int = 2500
+) -> list[Entry]:
     """Return split Entries for any large markdown doc that overruns entity extraction.
 
     If the doc fits in a single chunk it returns one Entry identical to ``_e()``.
@@ -119,7 +121,9 @@ def _split_entries(src: Path, *dest_parts: str, stem: str = "", max_chars: int =
 
 
 def _claude_global_entries(src: Path, *, max_chars: int = 2500) -> list[Entry]:
-    return _split_entries(src, "personal", "claude_global.md", stem="claude_global", max_chars=max_chars)
+    return _split_entries(
+        src, "personal", "claude_global.md", stem="claude_global", max_chars=max_chars
+    )
 
 
 def _personal() -> list[Entry]:

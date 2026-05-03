@@ -6,7 +6,7 @@ from typing import Any
 
 import httpx
 
-# Qwen2.5-32B can take 2–3 min to synthesise an answer on a 3090.
+# Qwen2.5-32B can take 2-3 min to synthesise an answer on a 3090.
 _QUERY_TIMEOUT = 300.0
 _DEFAULT_TIMEOUT = 30.0
 

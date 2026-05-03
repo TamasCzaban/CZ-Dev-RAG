@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from typing import Any
 
 SMOKE_DIR = Path(__file__).parent
 
@@ -49,9 +50,9 @@ def _find_unicode_font() -> Path | None:
     return None
 
 
-def _make_pdf(font_path: Path | None):  # type: ignore[return]
+def _make_pdf(font_path: Path | None) -> Any:
     """Return an FPDF instance with a Unicode-capable font (or Helvetica fallback)."""
-    from fpdf import FPDF  # type: ignore[import]
+    from fpdf import FPDF
 
     pdf = FPDF()
     pdf.set_margins(15, 15, 15)
@@ -64,8 +65,8 @@ def _make_pdf(font_path: Path | None):  # type: ignore[return]
     return pdf
 
 
-def _set_font(pdf, bold: bool = False) -> None:  # type: ignore[type-arg]
-    if pdf._unicode_font:  # type: ignore[attr-defined]
+def _set_font(pdf: Any, bold: bool = False) -> None:
+    if pdf._unicode_font:
         pdf.set_font("Unicode", style="B" if bold else "", size=13)
     else:
         pdf.set_font("Helvetica", style="B" if bold else "", size=13)

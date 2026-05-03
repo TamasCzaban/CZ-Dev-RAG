@@ -162,8 +162,11 @@ class TesseractEngine(BaseOCREngine):
         if tesseract_cmd:
             pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
 
-        poppler_path = os.environ.get("POPPLER_PATH") or None
-        images = convert_from_path(str(path), dpi=self._dpi, poppler_path=poppler_path)
+        poppler_path = os.environ.get("POPPLER_PATH")
+        if poppler_path:
+            images = convert_from_path(str(path), dpi=self._dpi, poppler_path=poppler_path)
+        else:
+            images = convert_from_path(str(path), dpi=self._dpi)
 
         page_texts: list[str] = []
         for image in images:
