@@ -171,15 +171,37 @@ services:
       retries: 5
       start_period: 60s
 
+  # ---------------------------------------------------------------------------
+  # mcp — Model Context Protocol server
+  #
+  # TWO ways to run this:
+  #
+  # 1. Host machine (Tamas — full stack including MCP):
+  #      docker compose --profile client up -d
+  #    All services start. lightrag, reranker, langfuse, AND mcp.
+  #    LIGHTRAG_HOST defaults to http://lightrag:9621 (Docker internal DNS).
+  #
+  # 2. Client-only (Zsombor — no local LightRAG stack):
+  #      docker compose --profile client up mcp -d
+  #    Only the mcp container starts. lightrag/reranker/langfuse are NOT
+  #    pulled or started. Set LIGHTRAG_HOST in .env to point at Tamas's
+  #    machine via Tailscale, e.g.:
+  #      LIGHTRAG_HOST=http://100.x.y.z:9621
+  #    The MCP server boots cleanly and fails fast at query time when the
+  #    remote host is unreachable — it does NOT crash on startup.
+  #
+  # NOTE: `profiles: [client]` means this service is EXCLUDED from the
+  # default `docker compose up` (no profile) AND from `--profile ingest`.
+  # The default profile boots only the backend stack (lightrag + reranker +
+  # langfuse) without the MCP server. Use --profile client to include it.
+  # ---------------------------------------------------------------------------
   mcp:
     build:
       context: .
       dockerfile: src/mcp_server/Dockerfile
+    profiles: [client]
     environment:
-      LIGHTRAG_HOST: http://lightrag:9621
-    depends_on:
-      lightrag:
-        condition: service_healthy
+      LIGHTRAG_HOST: ${LIGHTRAG_HOST:-http://lightrag:9621}
     stdin_open: true
     tty: true
 
